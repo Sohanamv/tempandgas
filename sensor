@@ -1,0 +1,52 @@
+// Define the pins for sensors and buzzer
+const int tempSensorPin = A0;  // Analog input pin for temperature sensor
+const int gasSensorPin = A1;   // Analog input pin for gas sensor
+const int buzzerPin = 9;       // Digital output pin for buzzer
+
+// Define the threshold values
+const float tempThreshold = 50.0;  // Temperature threshold (in Celsius)
+const int gasThreshold = 300;      // Gas sensor threshold (Analog value)
+
+void setup() {
+  // Initialize the Serial Monitor
+  Serial.begin(9600);
+  
+  // Initialize the buzzer pin as output
+  pinMode(buzzerPin, OUTPUT);
+  
+  // Initialize sensors pins as input
+  pinMode(tempSensorPin, INPUT);
+  pinMode(gasSensorPin, INPUT);
+}
+
+void loop() {
+  // Read the temperature sensor value
+  int tempReading = analogRead(tempSensorPin);
+  
+  // Convert the analog reading to voltage (0-1023 mapped to 0-5V)
+  float voltage = tempReading * (5.0 / 1023.0);
+  
+  // Convert the voltage to temperature in Celsius (for TMP36)
+  float temperatureC = (voltage - 0.5) * 100.0;
+  
+  // Read the gas sensor value
+  int gasReading = analogRead(gasSensorPin);
+  
+  // Display the readings on the Serial Monitor
+  Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.print(" C, Gas Level: ");
+  Serial.println(gasReading);
+
+  // Check if temperature exceeds the threshold or gas level is high
+  if (temperatureC > tempThreshold || gasReading > gasThreshold) {
+    // Turn on the buzzer if either threshold is exceeded
+    digitalWrite(buzzerPin, HIGH);
+  } else {
+    // Turn off the buzzer if everything is normal
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  // Small delay before the next loop
+  delay(1000);
+}
